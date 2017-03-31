@@ -21,7 +21,7 @@ public class MailSender implements RequestHandler<DynamodbEvent, Void> {
     public Void handleRequest(DynamodbEvent event, Context context) {
         event.getRecords().forEach(record -> {
             if(record.getEventName().equals("INSERT")) {
-                Map<String, AttributeValue> recordMap = record.getDynamodb().getKeys();
+                Map<String, AttributeValue> recordMap = record.getDynamodb().getNewImage();
                 String email = recordMap.get("email").getS();
                 String firstName = recordMap.get("firstName").getS();
                 Boolean attending = recordMap.get("areAttending").getBOOL();
