@@ -17,27 +17,27 @@ import java.util.Map;
  */
 public class MailSender implements RequestHandler<DynamodbEvent, Void> {
 
+    private final static String INSERT = "INSERT";
+
     @Override
     public Void handleRequest(DynamodbEvent event, Context context) {
         event.getRecords().forEach(record -> {
-            Map<String, AttributeValue> recordMap = record.getDynamodb().getKeys();
-            String email = recordMap.get("email").getS();
-            String firstName = recordMap.get("firstName").getS();
-            Boolean attending = recordMap.get("areAttending").getBOOL();
-            String numberAttending = recordMap.get("numberAttending").getN();
+            if(record.getEventName().equals(INSERT)) {
+                Map<String, AttributeValue> recordMap = record.getDynamodb().getKeys();
+                String email = recordMap.get("email").getS();
+                String firstName = recordMap.get("firstName").getS();
+                Boolean attending = recordMap.get("areAttending").getBOOL();
+                String numberAttending = recordMap.get("numberAttending").getN();
 
-            String message = getMessage(firstName, attending, numberAttending);
+                String message = getMessage(firstName, attending, numberAttending);
 
-            AmazonSimpleEmailService service =
-                AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).build();
+                AmazonSimpleEmailService service =
+                    AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).build();
 
-            service.sendEmail(new SendEmailRequest("romeshselvan@hotmail.co.uk",
-                                                   new Destination(Collections.singletonList(email)),
-                                                   new Message(
-                                                       new Content("RSVP Confirmation - Romesh & Charmikha"),
-                                                       new Body(new Content(message))
-                                                   )
-            ));
+                service.sendEmail(new SendEmailRequest("romeshselvan@hotmail.co.uk", new Destination(Collections.singletonList(email)),
+                                                       new Message(new Content("RSVP Confirmation - Romesh & Charmikha"),
+                                                                   new Body(new Content(message)))));
+            }
         });
         return null;
     }
