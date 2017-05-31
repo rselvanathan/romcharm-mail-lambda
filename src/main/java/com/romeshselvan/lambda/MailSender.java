@@ -32,6 +32,8 @@ public class MailSender implements RequestHandler<DynamodbEvent, Void> {
                 AmazonSimpleEmailService service =
                         AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).build();
 
+                context.getLogger().log(String.format("Sending mail to : %s", email));
+
                 service.sendEmail(new SendEmailRequest("romeshselvan@hotmail.co.uk",
                         new Destination(Collections.singletonList(email)),
                         new Message(
